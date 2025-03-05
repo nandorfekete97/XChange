@@ -1,0 +1,6 @@
+@XChange_HostAddress = http://localhost:5215
+
+GET {{XChange_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
