@@ -16,7 +16,7 @@ public class ExchangeService(
     ICurrencyRateRepository currencyRateRepository,
     ICompanyExchangeFundsRepository companyExchangeFundsRepository,
     IBookKeepingRepository bookKeepingRepository,
-    UserService _userService)
+    IUserService _userService)
 {
     
     public async Task DoExchange(int userId, int sourceCurrencyId, int targetCurrencyId, decimal amount)
@@ -84,7 +84,7 @@ public class ExchangeService(
             null
         );
         
-        // TODO: status handling refactor + ADD EXCHANGEINFO REPOSITORY
+        // TODO: status handling refactor 
 
     }
     
