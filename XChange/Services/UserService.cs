@@ -23,6 +23,11 @@ public class UserService(
         
         var user = await userRepository.GetUserById(id);
 
+        if (user is null)
+        {
+            throw new ArgumentException("User not found.");
+        }
+
         var userFundEntities = await userFundsRepository.GetUserFundsByUserId(user.Id);
 
         List<int> currencyIds = userFundEntities.Select(userFund => userFund.CurrencyId).ToList();
@@ -42,12 +47,12 @@ public class UserService(
         return new UserModel(user.Id, user.Name, userFundModels);
     }
 
-    private UserFundModel ConvertUserFundEntityToModel(UserFundEntity userFundEntity, CurrencyModel currencyModel)
+    public UserFundModel ConvertUserFundEntityToModel(UserFundEntity userFundEntity, CurrencyModel currencyModel)
     {
         return new UserFundModel(userFundEntity.Id, currencyModel, userFundEntity.Pending, userFundEntity.Disposable);
     }
 
-    private List<CurrencyModel> ConvertCurrencyEntitiesToModels(List<CurrencyEntity> currencyEntities)
+    public List<CurrencyModel> ConvertCurrencyEntitiesToModels(List<CurrencyEntity> currencyEntities)
     {
         return currencyEntities.Select(currencyEntity => 
             new CurrencyModel(

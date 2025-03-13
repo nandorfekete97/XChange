@@ -25,10 +25,6 @@ public class CurrencyRateRepository : ICurrencyRateRepository
     
     public async Task<Dictionary<int, CurrencyRateEntity>> GetLastCurrencyRateByCurrencyIds(List<int> currencyIds)
     {
-        // meg kell szerezni az osszes currency rate-et, amik a parameter currency id-kkal rendelkeznek
-        // egyszerre egy currency id-hez tartozo currencyrateentity-ket ossze kell gyujteni
-        // ezekbol kell a legutolso
-        
         List<CurrencyRateEntity> currencyRates = await _dbContext.CurrencyRates
             .Where(currencyRate => currencyIds.Contains(currencyRate.CurrencyId))
             .ToListAsync();

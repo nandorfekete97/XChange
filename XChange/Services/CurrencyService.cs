@@ -6,11 +6,11 @@ using XChange.Models;
 
 namespace XChange.Services;
 
-public class CurrencyService(ICurrencyRepository currencyRepository, ICurrencyRateRepository currencyRateRepository)
+public class CurrencyService(
+    ICurrencyRepository currencyRepository, 
+    ICurrencyRateRepository currencyRateRepository)
 {
-    private ICurrencyRepository _currencyRepository = currencyRepository;
-    private ICurrencyRateRepository _currencyRateRepository = currencyRateRepository;
-
+    
     public async Task<List<CurrencyRateModel>> GetLastCurrencyRatesByCurrencyIds(List<int> currencyIds)
     {
         List<CurrencyRateModel> currencyRateModels = new List<CurrencyRateModel>();
@@ -33,12 +33,12 @@ public class CurrencyService(ICurrencyRepository currencyRepository, ICurrencyRa
         return currencyRateModels;
     }
 
-    private CurrencyRateModel ConvertCurrencyRateEntityToModel(CurrencyRateEntity currencyRateEntity, CurrencyModel currencyModel)
+    public CurrencyRateModel ConvertCurrencyRateEntityToModel(CurrencyRateEntity currencyRateEntity, CurrencyModel currencyModel)
     {
         return new CurrencyRateModel(currencyModel, currencyRateEntity.Rate);
     }
     
-    private CurrencyModel ConvertCurrencyEntityToModel(CurrencyEntity currencyEntity)
+    public CurrencyModel ConvertCurrencyEntityToModel(CurrencyEntity currencyEntity)
     {
         return new CurrencyModel(currencyEntity.Id, currencyEntity.Name, currencyEntity.ShortName);
     }
