@@ -6,6 +6,7 @@ public interface ICurrencyRepository
 {
     Task<CurrencyEntity> GetById(int id);
     Task<List<CurrencyEntity>> GetByIds(List<int> ids);
-    Task AddAsync(CurrencyEntity currency);
-    Task DeleteAsync(CurrencyEntity currency);
+    Task<List<CurrencyEntity>> GetAll();
+    Task Create(CurrencyEntity currency);
+    Task DeleteById(int currencyId);
 }

@@ -13,20 +13,25 @@ public class BookKeepingRepository : IBookKeepingRepository
         _xChangeContext = xChangeContext;
     }
     
-    public async Task CreateAsync(BookKeepingEntity bookKeepingEntity)
+    public async Task Create(BookKeepingEntity bookKeepingEntity)
     {
         _xChangeContext.BookKeepings.Add(bookKeepingEntity);
         await _xChangeContext.SaveChangesAsync();
     }
 
-    public async Task<BookKeepingEntity> GetByIdAsync(int id)
+    public async Task<BookKeepingEntity> GetById(int id)
     {
         return await _xChangeContext.BookKeepings.FirstOrDefaultAsync(keeping => keeping.Id == id);
     }
 
-    public async Task DeleteAsync(BookKeepingEntity bookKeeping)
+    public async Task DeleteById(int bookKeepingId)
     {
-        _xChangeContext.BookKeepings.Remove(bookKeeping);
-        await _xChangeContext.SaveChangesAsync();
+        var bookKeepingToDelete = await _xChangeContext.BookKeepings.FirstOrDefaultAsync(entity => entity.Id == bookKeepingId);
+
+        if (bookKeepingToDelete is not null)
+        {
+            _xChangeContext.BookKeepings.Remove(bookKeepingToDelete);
+            await _xChangeContext.SaveChangesAsync();
+        }
     }
 }

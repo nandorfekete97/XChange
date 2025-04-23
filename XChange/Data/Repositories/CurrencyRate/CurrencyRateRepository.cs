@@ -43,16 +43,16 @@ public class CurrencyRateRepository : ICurrencyRateRepository
         return currencyToCurrencyRate;
     }
 
-    public async Task AddAsync(CurrencyRateEntity currencyRate)
+    public async Task Create(CurrencyRateEntity currencyRate)
     {
         _dbContext.CurrencyRates.AddAsync(currencyRate);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> DeleteAsync(int currencyRateId)
+    public async Task<bool> DeleteById(int currencyRateId)
     {
         var currencyRateToDelete =
-            _dbContext.CurrencyRates.FirstOrDefaultAsync(currencyRate => currencyRate.Id == currencyRateId);
+            await _dbContext.CurrencyRates.FirstOrDefaultAsync(currencyRate => currencyRate.Id == currencyRateId);
 
         if (currencyRateToDelete is not null)
         {

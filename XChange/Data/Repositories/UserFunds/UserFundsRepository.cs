@@ -13,32 +13,32 @@ public class UserFundsRepository : IUserFundsRepository
         _dbContext = dbContext;
     }
 
-    public async Task<UserFundEntity> GetUserFundsById(int userFundsId)
+    public async Task<UserFundEntity> GetById(int userFundsId)
     {
         return await _dbContext.UserFunds.FirstOrDefaultAsync(userFunds => userFunds.Id == userFundsId);
     }
 
-    public async Task<List<UserFundEntity>> GetUserFundsByUserId(int userId)
+    public async Task<List<UserFundEntity>> GetByUserId(int userId)
     {
         return await _dbContext.UserFunds.Where(userFunds => userFunds.UserId == userId).ToListAsync();
     }
 
-    public async Task CreateUserFunds(UserFundEntity userFund)
+    public async Task Create(UserFundEntity userFund)
     {
         _dbContext.UserFunds.AddAsync(userFund);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateUserFunds(UserFundEntity userFund)
+    public async Task Update(UserFundEntity userFund)
     {
         _dbContext.UserFunds.Update(userFund);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> DeleteUserFundsById(int userFundsId)
+    public async Task<bool> DeleteById(int userFundsId)
     {
         var userFundsToDelete =
-            _dbContext.UserFunds.FirstOrDefaultAsync(userFunds => userFunds.Id == userFundsId);
+            await _dbContext.UserFunds.FirstOrDefaultAsync(userFunds => userFunds.Id == userFundsId);
 
         if (userFundsToDelete is not null)
         {

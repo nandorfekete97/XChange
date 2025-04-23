@@ -4,9 +4,9 @@ namespace XChange.Data.Repositories.UserFunds;
 
 public interface IUserFundsRepository
 {
-    Task<UserFundEntity> GetUserFundsById(int userFundsId);
-    Task<List<UserFundEntity>> GetUserFundsByUserId(int userId);
-    Task CreateUserFunds(UserFundEntity userFund);
-    Task UpdateUserFunds(UserFundEntity userFund);
-    Task<bool> DeleteUserFundsById(int userFundsId);
+    Task<UserFundEntity> GetById(int userFundsId);
+    Task<List<UserFundEntity>> GetByUserId(int userId);
+    Task Create(UserFundEntity userFund);
+    Task Update(UserFundEntity userFund);
+    Task<bool> DeleteById(int userFundsId);
 }

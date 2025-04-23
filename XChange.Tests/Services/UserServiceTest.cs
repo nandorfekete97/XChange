@@ -33,7 +33,10 @@ public class UserServiceTest
     {
         // arrange
         CurrencyModel currencyModel = new CurrencyModel(1, "Forint", "HUF");
-        UserFundEntity userFundEntity = new UserFundEntity(1, 1, currencyModel.Id, 50, 130);
+        UserFundEntity userFundEntity = new UserFundEntity(1, currencyModel.Id, 50, 130)
+        {
+            Id = 1
+        };
 
         UserFundModel expectedUserFundModel = new UserFundModel(userFundEntity.Id, currencyModel,
             userFundEntity.Pending, userFundEntity.Disposable);

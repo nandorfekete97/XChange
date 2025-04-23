@@ -6,7 +6,7 @@ public interface IExchangeInfoRepository
 {
     Task<ExchangeInfoEntity> GetById(int id);
     //Task<List<ExchangeInfoEntity>> GetByIds(List<int> ids);
-    Task AddAsync(ExchangeInfoEntity exchangeInfoEntity);
-    Task UpdateAsync(ExchangeInfoEntity exchangeInfoEntity);
-    Task<bool> DeleteAsync(int id);
+    Task Create(ExchangeInfoEntity exchangeInfoEntity);
+    Task Update(ExchangeInfoEntity exchangeInfoEntity);
+    Task<bool> DeleteById(int id);
 }

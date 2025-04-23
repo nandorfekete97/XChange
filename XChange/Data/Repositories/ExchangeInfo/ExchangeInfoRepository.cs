@@ -23,21 +23,21 @@ public class ExchangeInfoRepository : IExchangeInfoRepository
     //     return await _dbContext.ExchangeInfos.Where(entity => ids.Contains(entity.Id)).ToListAsync();
     // }
 
-    public async Task AddAsync(ExchangeInfoEntity exchangeInfoEntity)
+    public async Task Create(ExchangeInfoEntity exchangeInfoEntity)
     {
         _dbContext.ExchangeInfos.AddAsync(exchangeInfoEntity);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(ExchangeInfoEntity exchangeInfoEntity)
+    public async Task Update(ExchangeInfoEntity exchangeInfoEntity)
     {
         _dbContext.Update(exchangeInfoEntity);
         await _dbContext.SaveChangesAsync();
     }
     
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteById(int id)
     {
-        var exchangeInfoToDelete = _dbContext.ExchangeInfos.FirstOrDefaultAsync(entity => entity.Id == id);
+        var exchangeInfoToDelete = await _dbContext.ExchangeInfos.FirstOrDefaultAsync(entity => entity.Id == id);
 
         if (exchangeInfoToDelete is not null)
         {

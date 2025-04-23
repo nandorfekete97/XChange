@@ -3,6 +3,7 @@ using XChange.Data.Repositories.BookKeeping;
 using XChange.Data.Repositories.CompanyExchangeFunds;
 using XChange.Data.Repositories.Currency;
 using XChange.Data.Repositories.CurrencyRate;
+using XChange.Data.Repositories.ExchangeInfo;
 using XChange.Data.Repositories.User;
 using XChange.Data.Repositories.UserFunds;
 using XChange.Models;
@@ -14,6 +15,7 @@ public class ExchangeService(
     IUserFundsRepository userFundsRepository,
     ICurrencyRepository currencyRepository,
     ICurrencyRateRepository currencyRateRepository,
+    IExchangeInfoRepository exchangeInfoRepository,
     ICompanyExchangeFundsRepository companyExchangeFundsRepository,
     IBookKeepingRepository bookKeepingRepository,
     IUserService _userService)
@@ -28,6 +30,22 @@ public class ExchangeService(
         // ha a user adatok megfelelnek (van eleg penze pl.), akkor verification, amikor vegbement => successful 
         // bookkeeping entry ha sikeres volt a valtas 
 
+        ExchangeInfoEntity exchangeInfoEntity = new ExchangeInfoEntity
+        {
+            FinalizedAt = null,
+            StartedAt = DateTime.Now,
+            FailedAt = null,
+            UserId = userId,
+            SourceCurrencyId = sourceCurrencyId,
+            TargetCurrencyId = targetCurrencyId,
+            CurrencyRateId = null,
+            SourceCurrencyAmount = amount,
+            Status = ExchangeStatus.Verification,
+            Error = null
+        };
+
+        exchangeInfoRepository.Create(exchangeInfoEntity);
+        
         List<CurrencyEntity> currencyEntities = await currencyRepository.GetByIds([sourceCurrencyId, targetCurrencyId]);
 
         CurrencyEntity? sourceCurrency = currencyEntities.FirstOrDefault(entity => entity.Id == sourceCurrencyId);
@@ -35,12 +53,19 @@ public class ExchangeService(
 
         if (sourceCurrency == null || targetCurrency == null)
         {
-            throw new ArgumentException("One or both currencies are non existent.");
+            HandleTransactionFailForEntity(exchangeInfoEntity);
+            //exchangeInfoEntity.Error = 
+            // throw new ArgumentException("One or both currencies are non existent.");
+            return;
         }
 
         if (amount <= 0)
         {
-            throw new ArgumentException("Exchange amount cannot be zero or negative.");
+            HandleTransactionFailForEntity(exchangeInfoEntity);
+
+            //exchangeInfoEntity.Error = 
+            //throw new ArgumentException("Exchange amount cannot be zero or negative.");
+            return;
         }
         
         UserModel userModel = await _userService.GetUserById(userId);
@@ -49,43 +74,64 @@ public class ExchangeService(
 
         if (sourceCurrencyFund == null)
         {
-            throw new ArgumentException("User doesn't own specified currency.");
+            HandleTransactionFailForEntity(exchangeInfoEntity);
+
+            //throw new ArgumentException("User doesn't own specified currency.");
+            return;
         }
 
         if (sourceCurrencyFund.Disposable < amount)
         {
-            throw new ArgumentException("Insufficient funds.");
+            HandleTransactionFailForEntity(exchangeInfoEntity);
+
+            //throw new ArgumentException("Insufficient funds.");
+            return;
         }
 
+        exchangeInfoEntity.Status = ExchangeStatus.Accepted;
+        exchangeInfoRepository.Update(exchangeInfoEntity);
+
         UserFundEntity sourceCurrencyUserFundEntity = new UserFundEntity(
-            sourceCurrencyFund.Id,
-            userModel.Id, 
+            userModel.Id,
             sourceCurrencyId,
             sourceCurrencyFund.Pending + amount,
-            sourceCurrencyFund.Disposable - amount);
-
-        await userFundsRepository.UpdateUserFunds(sourceCurrencyUserFundEntity);
+            sourceCurrencyFund.Disposable - amount
+        )
+        {
+            Id = sourceCurrencyFund.Id 
+        };
+        
+        await userFundsRepository.Update(sourceCurrencyUserFundEntity);
 
         Dictionary<int, CurrencyRateEntity> targetCurrencyIdWithLatestCurrencyRate =
             await currencyRateRepository.GetLastCurrencyRateByCurrencyIds([targetCurrencyId]);
-        int latestCurrencyRateId = targetCurrencyIdWithLatestCurrencyRate[targetCurrencyId].Id;
-
-        ExchangeInfoEntity exchangeInfoEntity = new ExchangeInfoEntity(
-            null,
-            null,
-            DateTime.Now,
-            null,
-            userModel.Id,
-            sourceCurrencyId,
-            targetCurrencyId,
-            latestCurrencyRateId,
-            amount,
-            ExchangeStatus.Accepted,
-            null
-        );
+        decimal latestCurrencyRate = targetCurrencyIdWithLatestCurrencyRate[targetCurrencyId].Rate;
         
-        // TODO: status handling refactor 
+        UserFundModel targetCurrencyFund = userModel.Funds.First(fund => fund.CurrencyModel.Id == targetCurrencyId);
 
+        UserFundEntity targetCurrencyUserFundEntity = new UserFundEntity(
+            userModel.Id,
+            targetCurrencyId,
+            targetCurrencyFund.Pending,
+            targetCurrencyFund.Disposable + (amount * latestCurrencyRate)
+        )
+        {
+            Id = targetCurrencyFund.Id
+        };
+
+        await userFundsRepository.Update(targetCurrencyUserFundEntity);
+
+        sourceCurrencyUserFundEntity.Pending -= amount;
+        await userFundsRepository.Update(sourceCurrencyUserFundEntity);
+
+        exchangeInfoEntity.Status = ExchangeStatus.Successful;
+        await exchangeInfoRepository.Update(exchangeInfoEntity);
     }
-    
+
+    private void HandleTransactionFailForEntity(ExchangeInfoEntity exchangeInfoEntity)
+    {
+        exchangeInfoEntity.FailedAt = DateTime.Now;
+        exchangeInfoEntity.Status = ExchangeStatus.Failed;
+        exchangeInfoRepository.Update(exchangeInfoEntity);
+    }
 }

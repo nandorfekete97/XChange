@@ -18,7 +18,7 @@ public interface ICurrencyRateRepository
     public Task<List<CurrencyRateEntity>> GetByCurrencyId(int currencyId);
 
     public Task<Dictionary<int, CurrencyRateEntity>> GetLastCurrencyRateByCurrencyIds(List<int> currencyIds);
-    public Task AddAsync(CurrencyRateEntity currencyRate);
+    public Task Create(CurrencyRateEntity currencyRate);
     //public Task<bool> DeleteAsync(InClassName inClassName);
-    public Task<bool> DeleteAsync(int currencyRateId);
+    public Task<bool> DeleteById(int currencyRateId);
 }

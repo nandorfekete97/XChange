@@ -2,5 +2,6 @@ namespace XChange.Models;
 
 public record UserModel(
     int Id, 
-    string Name, 
+    string FirstName, 
+    string LastName,
     List<UserFundModel> Funds);

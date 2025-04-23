@@ -30,14 +30,14 @@ namespace XChange.Services
                 throw new ArgumentNullException(nameof(id), "Invalid Id, no user found.");
             }
         
-            var user = await _userRepository.GetUserById(id);
+            var user = await _userRepository.GetById(id);
 
             if (user is null)
             {
                 throw new ArgumentException("User not found.");
             }
 
-            var userFundEntities = await _userFundsRepository.GetUserFundsByUserId(user.Id);
+            var userFundEntities = await _userFundsRepository.GetByUserId(user.Id);
 
             List<int> currencyIds = userFundEntities.Select(userFund => userFund.CurrencyId).ToList();
 
@@ -53,7 +53,7 @@ namespace XChange.Services
                 userFundModels.Add(userFundModel);
             }
 
-            return new UserModel(user.Id, user.Name, userFundModels);
+            return new UserModel(user.Id, user.FirstName, user.LastName, userFundModels);
         }
 
         public UserFundModel ConvertUserFundEntityToModel(UserFundEntity userFundEntity, CurrencyModel currencyModel)
