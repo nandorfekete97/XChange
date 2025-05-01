@@ -24,15 +24,25 @@ public class CurrencyRepository : ICurrencyRepository
         return await _dbContext.Currencies.Where(currency => ids.Contains(currency.Id)).ToListAsync();
     }
 
-    public async Task AddAsync(CurrencyEntity currency)
+    public async Task<List<CurrencyEntity>> GetAll()
+    {
+        return await _dbContext.Currencies.ToListAsync();
+    }
+
+    public async Task Create(CurrencyEntity currency)
     {
         _dbContext.Currencies.AddAsync(currency);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(CurrencyEntity currency)
+    public async Task DeleteById(int currencyId)
     {
-        _dbContext.Currencies.Remove(currency);
-        await _dbContext.SaveChangesAsync();
+        var currencyToDelete = await GetById(currencyId);
+
+        if (currencyToDelete is not null)
+        {
+            _dbContext.Currencies.Remove(currencyToDelete);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

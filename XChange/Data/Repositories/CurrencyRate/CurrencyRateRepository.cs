@@ -25,10 +25,6 @@ public class CurrencyRateRepository : ICurrencyRateRepository
     
     public async Task<Dictionary<int, CurrencyRateEntity>> GetLastCurrencyRateByCurrencyIds(List<int> currencyIds)
     {
-        // meg kell szerezni az osszes currency rate-et, amik a parameter currency id-kkal rendelkeznek
-        // egyszerre egy currency id-hez tartozo currencyrateentity-ket ossze kell gyujteni
-        // ezekbol kell a legutolso
-        
         List<CurrencyRateEntity> currencyRates = await _dbContext.CurrencyRates
             .Where(currencyRate => currencyIds.Contains(currencyRate.CurrencyId))
             .ToListAsync();
@@ -47,16 +43,16 @@ public class CurrencyRateRepository : ICurrencyRateRepository
         return currencyToCurrencyRate;
     }
 
-    public async Task AddAsync(CurrencyRateEntity currencyRate)
+    public async Task Create(CurrencyRateEntity currencyRate)
     {
         _dbContext.CurrencyRates.AddAsync(currencyRate);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> DeleteAsync(int currencyRateId)
+    public async Task<bool> DeleteById(int currencyRateId)
     {
         var currencyRateToDelete =
-            _dbContext.CurrencyRates.FirstOrDefaultAsync(currencyRate => currencyRate.Id == currencyRateId);
+            await _dbContext.CurrencyRates.FirstOrDefaultAsync(currencyRate => currencyRate.Id == currencyRateId);
 
         if (currencyRateToDelete is not null)
         {

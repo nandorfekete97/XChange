@@ -4,7 +4,7 @@ namespace XChange.Data.Repositories.BookKeeping;
 
 public interface IBookKeepingRepository
 {
-    public Task CreateAsync(BookKeepingEntity bookKeeping);
-    public Task<BookKeepingEntity> GetByIdAsync(int id);
-    public Task DeleteAsync(BookKeepingEntity bookKeeping);
+    public Task Create(BookKeepingEntity bookKeeping);
+    public Task<BookKeepingEntity> GetById(int id);
+    public Task DeleteById(int id);
 }

@@ -2,6 +2,6 @@ namespace XChange.Data.Entities;
 
 public class CompanyExchangeFundEntity
 {
-    public int Id;
-    public decimal Balance;
+    public int Id { get; set; }
+    public decimal Balance { get; set; }
 }

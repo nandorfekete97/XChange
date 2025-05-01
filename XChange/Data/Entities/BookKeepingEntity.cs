@@ -1,8 +1,16 @@
 namespace XChange.Data.Entities;
 
-public class BookKeepingEntity(int exchangeInfoId, DateTime createdAt)
+public class BookKeepingEntity
 {
-    public int Id;
-    public int ExchangeInfoId = exchangeInfoId;
-    public DateTime CreatedAt = createdAt;
+    public int Id { get; set; }
+    public int ExchangeInfoId { get; set; }
+    public DateTime CreatedAt { get; set; }
+
+    public BookKeepingEntity() { }
+
+    public BookKeepingEntity(int exchangeInfoId, DateTime createdAt)
+    {
+        ExchangeInfoId = exchangeInfoId;
+        CreatedAt = createdAt;
+    }
 }

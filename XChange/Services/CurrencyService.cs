@@ -6,18 +6,24 @@ using XChange.Models;
 
 namespace XChange.Services;
 
-public class CurrencyService(ICurrencyRepository currencyRepository, ICurrencyRateRepository currencyRateRepository)
+public class CurrencyService : ICurrencyService
 {
-    private ICurrencyRepository _currencyRepository = currencyRepository;
-    private ICurrencyRateRepository _currencyRateRepository = currencyRateRepository;
+    private readonly ICurrencyRepository _currencyRepository;
+    private readonly ICurrencyRateRepository _currencyRateRepository;
+
+    public CurrencyService(ICurrencyRepository currencyRepository, ICurrencyRateRepository currencyRateRepository)
+    {
+        _currencyRepository = currencyRepository;
+        _currencyRateRepository = currencyRateRepository;
+    }
 
     public async Task<List<CurrencyRateModel>> GetLastCurrencyRatesByCurrencyIds(List<int> currencyIds)
     {
         List<CurrencyRateModel> currencyRateModels = new List<CurrencyRateModel>();
 
-        Dictionary<int, CurrencyRateEntity> currencyIdToMostRecentCurrencyRates = await currencyRateRepository.GetLastCurrencyRateByCurrencyIds(currencyIds);
+        Dictionary<int, CurrencyRateEntity> currencyIdToMostRecentCurrencyRates = await _currencyRateRepository.GetLastCurrencyRateByCurrencyIds(currencyIds);
         
-        List<CurrencyEntity> currencyEntities = await currencyRepository.GetByIds(currencyIds);
+        List<CurrencyEntity> currencyEntities = await _currencyRepository.GetByIds(currencyIds);
         
         foreach (var currencyEntity in currencyEntities)
         {
@@ -33,12 +39,12 @@ public class CurrencyService(ICurrencyRepository currencyRepository, ICurrencyRa
         return currencyRateModels;
     }
 
-    private CurrencyRateModel ConvertCurrencyRateEntityToModel(CurrencyRateEntity currencyRateEntity, CurrencyModel currencyModel)
+    public CurrencyRateModel ConvertCurrencyRateEntityToModel(CurrencyRateEntity currencyRateEntity, CurrencyModel currencyModel)
     {
         return new CurrencyRateModel(currencyModel, currencyRateEntity.Rate);
     }
     
-    private CurrencyModel ConvertCurrencyEntityToModel(CurrencyEntity currencyEntity)
+    public CurrencyModel ConvertCurrencyEntityToModel(CurrencyEntity currencyEntity)
     {
         return new CurrencyModel(currencyEntity.Id, currencyEntity.Name, currencyEntity.ShortName);
     }

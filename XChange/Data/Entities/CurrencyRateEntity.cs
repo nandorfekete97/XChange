@@ -1,9 +1,18 @@
 namespace XChange.Data.Entities;
 
-public class CurrencyRateEntity(int currencyId, decimal rate, DateTime timestamp)
+public class CurrencyRateEntity
 {
-    public int Id;
-    public int CurrencyId = currencyId;
-    public decimal Rate = rate;
-    public DateTime Timestamp = timestamp;
+    public int Id { get; set; }
+    public int CurrencyId { get; set; }
+    public decimal Rate { get; set; }
+    public DateTime Timestamp { get; set; }
+
+    public CurrencyRateEntity() { }
+
+    public CurrencyRateEntity(int currencyId, decimal rate, DateTime timestamp)
+    {
+        CurrencyId = currencyId;
+        Rate = rate;
+        Timestamp = timestamp;
+    }
 }

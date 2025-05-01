@@ -1,10 +1,22 @@
 namespace XChange.Data.Entities;
 
-public class UserFundEntity(int userId, int currencyId)
+public class UserFundEntity
 {
-    public int Id;
-    public int UserId = userId;
-    public int CurrencyId = currencyId;
-    public decimal Pending;
-    public decimal Disposable;
+    public int Id { get; set; } 
+    public int UserId { get; set; } 
+    public int CurrencyId { get; set; }
+    public decimal Pending { get; set; }
+    public decimal Disposable { get; set; }
+
+    public UserFundEntity()
+    {
+    }
+
+    public UserFundEntity(int userId, int currencyId, decimal pending, decimal disposable)
+    {
+        UserId = userId;
+        CurrencyId = currencyId;
+        Pending = pending;
+        Disposable = disposable;
+    }
 }

@@ -13,31 +13,37 @@ public class UserRepository : IUserRepository
         _dbContext = dbContext;
     }
 
-    public Task<UserEntity?> GetUserById(int userId)
+    public Task<UserEntity?> GetById(int userId)
     {
         return _dbContext.Users.FirstOrDefaultAsync(userEntity => userEntity.Id == userId);
     }
 
-    public async Task<UserEntity?> GetUserByName(string name)
+    public async Task<UserEntity?> GetByFirstName(string firstName)
     {
-        return await _dbContext.Users.FirstOrDefaultAsync(userEntity => userEntity.Name == name);
+        return await _dbContext.Users.FirstOrDefaultAsync(userEntity => userEntity.FirstName == firstName);
     }
 
-    public async Task CreateUser(UserEntity user)
+    public async Task<UserEntity?> GetByFullName(string firstName, string lastName)
+    {
+        return await _dbContext.Users.FirstOrDefaultAsync(userEntity =>
+            userEntity.FirstName == firstName && userEntity.LastName == lastName);
+    }
+
+    public async Task Create(UserEntity user)
     {
         await _dbContext.Users.AddAsync(user);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateUser(UserEntity user)
+    public async Task Update(UserEntity user)
     {
         _dbContext.Update(user);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> DeleteUserById(int userId)
+    public async Task<bool> DeleteById(int userId)
     {
-        var userToDelete = _dbContext.Users.FirstOrDefaultAsync(userEntity => userEntity.Id == userId);
+        var userToDelete = await _dbContext.Users.FirstOrDefaultAsync(userEntity => userEntity.Id == userId);
 
         if (userToDelete is not null)
         {

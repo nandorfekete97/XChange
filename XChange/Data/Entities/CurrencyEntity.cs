@@ -1,8 +1,16 @@
 namespace XChange.Data.Entities;
 
-public class CurrencyEntity(string name, string shortName)
+public class CurrencyEntity
 {
-    public int Id;
-    public string Name = name;
-    public string ShortName = shortName;
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string ShortName { get; set; }
+
+    public CurrencyEntity() { }
+
+    public CurrencyEntity(string name, string shortName)
+    {
+        Name = name;
+        ShortName = shortName;
+    }
 }

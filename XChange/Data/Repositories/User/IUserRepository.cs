@@ -4,9 +4,10 @@ namespace XChange.Data.Repositories.User;
 
 public interface IUserRepository
 {
-    Task<UserEntity?> GetUserById(int id);
-    Task<UserEntity?> GetUserByName(string name);
-    Task CreateUser(UserEntity user);
-    Task UpdateUser(UserEntity user);
-    Task<bool> DeleteUserById(int id);
+    Task<UserEntity?> GetById(int id);
+    Task<UserEntity?> GetByFirstName(string name);
+    Task<UserEntity?> GetByFullName(string firstName, string lastName);
+    Task Create(UserEntity user);
+    Task Update(UserEntity user);
+    Task<bool> DeleteById(int id);
 }
