@@ -18,7 +18,7 @@ public class ExchangeService(
     IExchangeInfoRepository exchangeInfoRepository,
     ICompanyExchangeFundsRepository companyExchangeFundsRepository,
     IBookKeepingRepository bookKeepingRepository,
-    IUserService _userService)
+    IUserService _userService) : IExchangeService
 {
     
     public async Task DoExchange(int userId, int sourceCurrencyId, int targetCurrencyId, decimal amount)
@@ -68,7 +68,7 @@ public class ExchangeService(
             return;
         }
         
-        UserModel userModel = await _userService.GetUserById(userId);
+        UserModel userModel = await _userService.GetById(userId);
 
         UserFundModel? sourceCurrencyFund = userModel.Funds.FirstOrDefault(fund => fund.CurrencyModel.Id == sourceCurrencyId);
 

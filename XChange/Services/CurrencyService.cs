@@ -8,8 +8,8 @@ namespace XChange.Services;
 
 public class CurrencyService : ICurrencyService
 {
-    private readonly ICurrencyRepository _currencyRepository;
-    private readonly ICurrencyRateRepository _currencyRateRepository;
+    private ICurrencyRepository _currencyRepository;
+    private ICurrencyRateRepository _currencyRateRepository;
 
     public CurrencyService(ICurrencyRepository currencyRepository, ICurrencyRateRepository currencyRateRepository)
     {

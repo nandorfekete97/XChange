@@ -23,7 +23,7 @@ namespace XChange.Services
             _currencyRepository = currencyRepository;
         }
 
-        public async Task<UserModel> GetUserById(int id)
+        public async Task<UserModel> GetById(int id)
         {
             if (id == 0)
             {
@@ -54,6 +54,33 @@ namespace XChange.Services
             }
 
             return new UserModel(user.Id, user.FirstName, user.LastName, userFundModels);
+        }
+
+        public Task CreateUser(UserModel userModel)
+        {
+            // if (userModel.Id != 0)
+            // {
+            //     throw new ArgumentException("User ID must be null.");
+            // }
+            //
+            // if (userModel.FirstName == "" || userModel.LastName == "")
+            // {
+            //     throw new ArgumentException("First name and last name cannot be empty.");
+            // }
+            //
+            // UserEntity newUserEntity = con
+            throw new NotImplementedException();
+
+        }
+
+        public Task UpdateUser(UserModel userModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteUser(int id)
+        {
+            throw new NotImplementedException();
         }
 
         public UserFundModel ConvertUserFundEntityToModel(UserFundEntity userFundEntity, CurrencyModel currencyModel)

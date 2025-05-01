@@ -122,7 +122,7 @@ public class ExchangeServiceTest
                 new() { Id = targetCurrencyId, Name = "Euro", ShortName = "EUR" }
             });
 
-        _userServiceMock.Setup(svc => svc.GetUserById(userId))
+        _userServiceMock.Setup(svc => svc.GetById(userId))
             .ReturnsAsync(new UserModel(
                 userId,
                 "Test",
@@ -173,7 +173,7 @@ public class ExchangeServiceTest
             }
         );
 
-        _userServiceMock.Setup(svc => svc.GetUserById(userId)).ReturnsAsync(user);
+        _userServiceMock.Setup(svc => svc.GetById(userId)).ReturnsAsync(user);
 
         _exchangeInfoRepoMock.Setup(repo => repo.Create(It.IsAny<ExchangeInfoEntity>()));
         _exchangeInfoRepoMock.Setup(repo => repo.Update(It.Is<ExchangeInfoEntity>(e =>
@@ -214,7 +214,7 @@ public async Task DoExchange_Succeeds_WhenAllConditionsAreMet()
         }
     );
 
-    _userServiceMock.Setup(svc => svc.GetUserById(userId)).ReturnsAsync(user);
+    _userServiceMock.Setup(svc => svc.GetById(userId)).ReturnsAsync(user);
 
     _currencyRateRepoMock.Setup(repo => repo.GetLastCurrencyRateByCurrencyIds(It.IsAny<List<int>>()))
         .ReturnsAsync(new Dictionary<int, CurrencyRateEntity>
