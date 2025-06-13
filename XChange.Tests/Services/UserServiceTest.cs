@@ -26,6 +26,7 @@ public class UserServiceTest
         _userFundsRepoMock = new Mock<IUserFundsRepository>();
         _currencyRepoMock = new Mock<ICurrencyRepository>();
         _userService = new UserService(_userRepoMock.Object, _userFundsRepoMock.Object, _currencyRepoMock.Object);
+        var e = "";
     }
 
     [Test]
