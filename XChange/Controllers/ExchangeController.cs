@@ -35,6 +35,13 @@ public class ExchangeController : ControllerBase
         List<ExchangeInfoEntity> exchangeInfoEntities = await _exchangeService.GetByIds(ids);
         return Ok(new { exchangeInfoEntities });
     }
+
+    [HttpGet("GetExchangeInfosByUserId")]
+    public async Task<IActionResult> GetExchangeInfosByUserId(int userId)
+    {
+        List<ExchangeInfoEntity> exchangeInfoEntities = await _exchangeService.GetByUserId(userId);
+        return Ok(new { exchangeInfoEntities });
+    }
     
     [HttpDelete("DeleteExchangeInfo")]
     public async Task<IActionResult> DeleteExchangeInfo([FromQuery]int id)
