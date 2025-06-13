@@ -23,10 +23,11 @@ public class UserFundsRepository : IUserFundsRepository
         return await _dbContext.UserFunds.Where(userFunds => userFunds.UserId == userId).ToListAsync();
     }
 
-    public async Task Create(UserFundEntity userFund)
+    public async Task<UserFundEntity> Create(UserFundEntity userFund)
     {
-        _dbContext.UserFunds.AddAsync(userFund);
+        var createdUserFund = await _dbContext.UserFunds.AddAsync(userFund);
         await _dbContext.SaveChangesAsync();
+        return createdUserFund.Entity;
     }
 
     public async Task Update(UserFundEntity userFund)

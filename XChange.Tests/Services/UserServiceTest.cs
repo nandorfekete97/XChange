@@ -38,8 +38,12 @@ public class UserServiceTest
             Id = 1
         };
 
-        UserFundModel expectedUserFundModel = new UserFundModel(userFundEntity.Id, currencyModel,
-            userFundEntity.Pending, userFundEntity.Disposable);
+        UserFundModel expectedUserFundModel = new UserFundModel(
+            userFundEntity.Id, 
+            UserId:userFundEntity.UserId, 
+            currencyModel,
+            userFundEntity.Pending, 
+            userFundEntity.Disposable);
         
         // act
         var result = _userService.ConvertUserFundEntityToModel(userFundEntity, currencyModel);
@@ -55,18 +59,18 @@ public class UserServiceTest
     public void Test_Convert_CurrencyEntities_To_Models()
     {
         // arrange
-        CurrencyEntity forint = new CurrencyEntity("Forint", "HUF");
-        CurrencyEntity dollar = new CurrencyEntity("American Dollar", "USD"); 
+        CurrencyEntity currencyEntity1 = new CurrencyEntity { Name = "Forint", ShortName = "HUF" };
+        CurrencyEntity currencyEntity2 = new CurrencyEntity { Name = "American Dollar", ShortName = "USD" };
         
         List<CurrencyEntity> currencyEntities = new List<CurrencyEntity>
         {
-            forint, dollar
+            currencyEntity1, currencyEntity2
         };
 
         List<CurrencyModel> expectedCurrencyModels = new List<CurrencyModel>
         {
-            new CurrencyModel(forint.Id, forint.Name, forint.ShortName),
-            new CurrencyModel(dollar.Id, dollar.Name, dollar.ShortName)
+            new CurrencyModel(currencyEntity1.Id, currencyEntity1.Name, currencyEntity1.ShortName),
+            new CurrencyModel(currencyEntity2.Id, currencyEntity2.Name, currencyEntity2.ShortName)
         };
 
         // act

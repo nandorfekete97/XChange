@@ -38,8 +38,9 @@ public class CurrencyRepositoryTest
     [Test]
     public async Task GetById_ReturnsCorrectCurrency()
     {
-        CurrencyEntity currencyEntity1 = new CurrencyEntity("Forint", "HUF");
-        CurrencyEntity currencyEntity2 = new CurrencyEntity("Euro", "EUR");
+        CurrencyEntity currencyEntity1 = new CurrencyEntity { Name = "Forint", ShortName = "HUF" };
+        CurrencyEntity currencyEntity2 = new CurrencyEntity { Name = "Euro", ShortName = "EUR" };
+        
         List<CurrencyEntity> currencyEntities = new List<CurrencyEntity> { currencyEntity1, currencyEntity2 };
 
         await _dbContext.Currencies.AddRangeAsync(currencyEntities);
@@ -53,8 +54,8 @@ public class CurrencyRepositoryTest
     [Test]
     public async Task GetByIds_SuccessfullyReturnsCorrectCurrencies()
     {
-        CurrencyEntity currencyEntity1 = new CurrencyEntity("Forint", "HUF");
-        CurrencyEntity currencyEntity2 = new CurrencyEntity("Euro", "EUR");
+        CurrencyEntity currencyEntity1 = new CurrencyEntity { Name = "Forint", ShortName = "HUF" };
+        CurrencyEntity currencyEntity2 = new CurrencyEntity { Name = "Euro", ShortName = "EUR" };
         List<CurrencyEntity> currencyEntities = new List<CurrencyEntity> { currencyEntity1, currencyEntity2 };
 
         await _dbContext.Currencies.AddRangeAsync(currencyEntities);
@@ -73,8 +74,8 @@ public class CurrencyRepositoryTest
     [Test]
     public async Task Create_SuccessfullyAddsCurrency()
     {
-        CurrencyEntity currencyEntity = new CurrencyEntity("American Dollar", "USD");
-
+        CurrencyEntity currencyEntity = new CurrencyEntity { Name = "Forint", ShortName = "HUF" }; 
+        
         await _repository.Create(currencyEntity);
 
         var result = await _repository.GetById(currencyEntity.Id);
@@ -85,8 +86,8 @@ public class CurrencyRepositoryTest
     [Test]
     public async Task GetAll_SuccessfullyReturnsAllCurrencies()
     {
-        CurrencyEntity currencyEntity1 = new CurrencyEntity("Forint", "HUF");
-        CurrencyEntity currencyEntity2 = new CurrencyEntity("Euro", "EUR");
+        CurrencyEntity currencyEntity1 = new CurrencyEntity { Name = "Forint", ShortName = "HUF" };
+        CurrencyEntity currencyEntity2 = new CurrencyEntity { Name = "Euro", ShortName = "EUR" };
         List<CurrencyEntity> currencyEntities = new List<CurrencyEntity> { currencyEntity1, currencyEntity2 };
         
         await _dbContext.Currencies.AddRangeAsync(currencyEntities);
@@ -100,8 +101,8 @@ public class CurrencyRepositoryTest
     [Test]
     public async Task DeleteById_SuccessfullyDeletesCurrency()
     {
-        CurrencyEntity currencyEntity1 = new CurrencyEntity("Forint", "HUF");
-        CurrencyEntity currencyEntity2 = new CurrencyEntity("Euro", "EUR");
+        CurrencyEntity currencyEntity1 = new CurrencyEntity { Name = "Forint", ShortName = "HUF" };
+        CurrencyEntity currencyEntity2 = new CurrencyEntity { Name = "Euro", ShortName = "EUR" };
         List<CurrencyEntity> currencyEntities = new List<CurrencyEntity> { currencyEntity1, currencyEntity2 };
 
         await _dbContext.Currencies.AddRangeAsync(currencyEntities);
