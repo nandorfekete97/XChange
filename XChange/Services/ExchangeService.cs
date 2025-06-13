@@ -39,7 +39,17 @@ public class ExchangeService(
         
         return await exchangeInfoRepository.GetByIds(exchangeInfoIds);
     }
-    
+
+    public async Task<List<ExchangeInfoEntity>> GetByUserId(int userId)
+    {
+        if (userId <= 0)
+        {
+            throw new ArgumentException("ID must be positive integer.");
+        }
+
+        return await exchangeInfoRepository.GetByUserId(userId);
+    }
+
     public async Task DeleteById(int exchangeInfoId)
     {
         ExchangeInfoEntity exchangeInfoToDelete = await exchangeInfoRepository.GetById(exchangeInfoId);

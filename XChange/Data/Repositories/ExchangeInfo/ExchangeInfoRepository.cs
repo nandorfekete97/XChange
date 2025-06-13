@@ -23,6 +23,11 @@ public class ExchangeInfoRepository : IExchangeInfoRepository
          return await _dbContext.ExchangeInfos.Where(entity => ids.Contains(entity.Id)).ToListAsync();
      }
 
+    public async Task<List<ExchangeInfoEntity>> GetByUserId(int userId)
+    {
+        return await _dbContext.ExchangeInfos.Where(entity => entity.UserId == userId).ToListAsync();
+    }
+
     public async Task Create(ExchangeInfoEntity exchangeInfoEntity)
     {
         _dbContext.ExchangeInfos.AddAsync(exchangeInfoEntity);
