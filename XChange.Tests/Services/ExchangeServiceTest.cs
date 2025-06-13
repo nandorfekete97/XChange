@@ -197,4 +197,31 @@ public class ExchangeServiceTest
 
         _exchangeInfoRepoMock.Verify();
     }
+
+    [Test]
+    public async Task GetByUserId_SuccessfullyReturnsExchangeInfos()
+    {
+        int userId = 1;
+        ExchangeInfoEntity exchangeInfoEntity1 = new ExchangeInfoEntity { Id = 1 };
+        ExchangeInfoEntity exchangeInfoEntity2 = new ExchangeInfoEntity { Id = 2 };
+        List<ExchangeInfoEntity> exchangeInfoEntities = new List<ExchangeInfoEntity>
+            { exchangeInfoEntity1, exchangeInfoEntity2 };
+
+        _exchangeInfoRepoMock.Setup(repository => repository.GetByUserId(userId)).ReturnsAsync(exchangeInfoEntities);
+
+        var result = await _exchangeService.GetByUserId(userId);
+        
+        Assert.That(result, Is.EquivalentTo(exchangeInfoEntities));
+    }
+
+    [Test]
+    public async Task GetByUserId_InvalidUserId_ThrowsException()
+    {
+        int userId = 0;
+
+        var exception = Assert.ThrowsAsync<ArgumentException>(async () => await _exchangeService.GetByUserId(userId));
+        
+        Assert.That(exception.Message, Is.EqualTo("ID must be positive integer."));
+        _exchangeInfoRepoMock.Verify(repository => repository.GetByUserId(userId), Times.Never);
+    }
 }
