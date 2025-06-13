@@ -30,12 +30,17 @@ public class CurrencyServiceTest
     [Test]
     public void Test_Convert_CurrencyRateEntity_To_Model()
     {
-        // arrange
-        CurrencyRateEntity currencyRateEntity = new CurrencyRateEntity(1, 410, new DateTime(2025, 3, 11));
-
+        CurrencyRateEntity currencyRateEntity = new CurrencyRateEntity
+        {
+            Id = 1,
+            CurrencyId = 1,
+            Rate = 410,
+            Timestamp = DateTime.UtcNow,
+        };
+        
         CurrencyModel currencyModel = new CurrencyModel(1, "Forint", "HUF");
 
-        CurrencyRateModel expectedCurrencyRateModel = new CurrencyRateModel(currencyModel, currencyRateEntity.Rate);
+        CurrencyRateModel expectedCurrencyRateModel = new CurrencyRateModel(1, currencyModel, currencyRateEntity.Rate);
         
         // act
         var result = _currencyService.ConvertCurrencyRateEntityToModel(currencyRateEntity, currencyModel);
@@ -48,7 +53,7 @@ public class CurrencyServiceTest
     public void Test_Convert_CurrencyEntity_To_Model()
     {
         // arrange
-        CurrencyEntity currencyEntity = new CurrencyEntity("Forint", "HUF");
+        CurrencyEntity currencyEntity = new CurrencyEntity { Name = "Forint", ShortName = "HUF" };
 
         CurrencyModel expectedCurrencyModel = new CurrencyModel(currencyEntity.Id, currencyEntity.Name, currencyEntity.ShortName);
 
@@ -65,17 +70,18 @@ public class CurrencyServiceTest
         // arrange
         List<CurrencyEntity> currencyEntities = new List<CurrencyEntity>()
         {
-            new CurrencyEntity("Forint", "HUF") { Id = 1 },
-            new CurrencyEntity("American Dollar", "USD") { Id = 2 },
-            new CurrencyEntity("Canadian Dollar", "CAD") { Id = 3 }
+            new CurrencyEntity { Id = 1, Name = "Forint", ShortName = "HUF" },
+            new CurrencyEntity { Id = 2, Name = "Dollar", ShortName = "USD" },
+            new CurrencyEntity { Id = 3, Name = "Canadian Dollar", ShortName = "CAD" }
         };
 
+
         // repository makes the filter for latest currency rates, only one (latest) currency rate needs to be defined for each currency
-        Dictionary<int, CurrencyRateEntity> currencyIdToMostRecentCurrencyRates = new Dictionary<int, CurrencyRateEntity>()
+        Dictionary<int, CurrencyRateEntity> currencyIdToMostRecentCurrencyRates = new Dictionary<int, CurrencyRateEntity>
         {
-            { 1, new CurrencyRateEntity(1, 410, new DateTime(2025, 3, 11)) }, 
-            { 2, new CurrencyRateEntity(2, 1.2m, new DateTime(2025, 3, 11)) }, 
-            { 3, new CurrencyRateEntity(3, 1.35m, new DateTime(2025, 3, 11)) } 
+            { 1, new CurrencyRateEntity { CurrencyId = 1, Rate = 410m, Timestamp = new DateTime(2025, 3, 11) } },
+            { 2, new CurrencyRateEntity { CurrencyId = 2, Rate = 1.2m, Timestamp = new DateTime(2025, 3, 11) } },
+            { 3, new CurrencyRateEntity { CurrencyId = 3, Rate = 1.35m, Timestamp = new DateTime(2025, 3, 11) } }
         };
 
         _currencyRepoMock

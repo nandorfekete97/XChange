@@ -24,11 +24,11 @@ namespace XChange.Migrations
 
             modelBuilder.Entity("XChange.Data.Entities.BookKeepingEntity", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -55,6 +55,13 @@ namespace XChange.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CompanyExchangeFunds");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Balance = 500000m
+                        });
                 });
 
             modelBuilder.Entity("XChange.Data.Entities.CurrencyEntity", b =>
@@ -76,6 +83,26 @@ namespace XChange.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Currencies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Forint",
+                            ShortName = "HUF"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Dollar",
+                            ShortName = "USD"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Euro",
+                            ShortName = "EUR"
+                        });
                 });
 
             modelBuilder.Entity("XChange.Data.Entities.CurrencyRateEntity", b =>
@@ -102,11 +129,11 @@ namespace XChange.Migrations
 
             modelBuilder.Entity("XChange.Data.Entities.ExchangeInfoEntity", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("CurrencyRateId")
                         .HasColumnType("int");
@@ -151,13 +178,37 @@ namespace XChange.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FirstName = "Kobe",
+                            LastName = "Bryant"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            FirstName = "Jason",
+                            LastName = "Kidd"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FirstName = "Lebron",
+                            LastName = "James"
+                        });
                 });
 
             modelBuilder.Entity("XChange.Data.Entities.UserFundEntity", b =>
@@ -183,6 +234,16 @@ namespace XChange.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserFunds");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CurrencyId = 3,
+                            Disposable = 500m,
+                            Pending = 0m,
+                            UserId = 1
+                        });
                 });
 #pragma warning restore 612, 618
         }
