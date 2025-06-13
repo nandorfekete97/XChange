@@ -7,7 +7,7 @@ namespace XChange.Data.context;
 
 public class XChangeContext : DbContext
 {
-    //public XChangeContext(DbContextOptions<XChangeContext> options) : base(options) {}
+    public XChangeContext(DbContextOptions<XChangeContext> options) : base(options) {}
 
     public DbSet<BookKeepingEntity> BookKeepings { get; set; }
     public DbSet<CompanyExchangeFundEntity> CompanyExchangeFunds { get; set; }

@@ -39,8 +39,13 @@ public class CurrencyRateRepositoryTest
     [Test]
     public async Task GetById_SuccessfullyReturnsCurrencyRate()
     {
-        CurrencyRateEntity currencyRateEntity = new CurrencyRateEntity(1, 10, DateTime.UtcNow);
-
+        CurrencyRateEntity currencyRateEntity = new CurrencyRateEntity
+        {
+            CurrencyId = 1,
+            Rate = 10,
+            Timestamp = DateTime.UtcNow
+        };
+        
         await _dbContext.CurrencyRates.AddAsync(currencyRateEntity);
         await _dbContext.SaveChangesAsync();
         
@@ -52,19 +57,18 @@ public class CurrencyRateRepositoryTest
     [Test]
     public async Task GetByCurrencyId_SuccessfullyReturnsCurrencyRate()
     {
-        CurrencyEntity currencyEntity1 = new CurrencyEntity("Forint", "HUF");
-        
+        CurrencyEntity currencyEntity1 = new CurrencyEntity { Name = "Forint", ShortName = "HUF" };
         await _dbContext.Currencies.AddAsync(currencyEntity1);
         await _dbContext.SaveChangesAsync();
-        
+    
         DateTime now = DateTime.UtcNow;
-        CurrencyRateEntity currencyRateEntity1 = new CurrencyRateEntity(currencyEntity1.Id, 10, now);
-
-        CurrencyRateEntity currencyRateEntity2 = new CurrencyRateEntity(currencyEntity1.Id, 10, now);
-
+    
+        CurrencyRateEntity currencyRateEntity1 = new CurrencyRateEntity(0, currencyEntity1.Id, 10, now);
+        CurrencyRateEntity currencyRateEntity2 = new CurrencyRateEntity(0, currencyEntity1.Id, 10, now);
+    
         int differentId = 99;
-        CurrencyRateEntity currencyRateEntity3 = new CurrencyRateEntity(differentId, 10, now);
-            
+        CurrencyRateEntity currencyRateEntity3 = new CurrencyRateEntity(0, differentId, 10, now);
+
         await _dbContext.CurrencyRates.AddAsync(currencyRateEntity1);
         await _dbContext.CurrencyRates.AddAsync(currencyRateEntity2);
         await _dbContext.CurrencyRates.AddAsync(currencyRateEntity3);
@@ -74,33 +78,34 @@ public class CurrencyRateRepositoryTest
         {
             currencyRateEntity1, currencyRateEntity2
         };
-        
+
         var result = await _repository.GetByCurrencyId(currencyEntity1.Id);
 
+        // Assert that the result matches the expected list
         Assert.That(result, Is.EquivalentTo(expected));
     }
-
+    
     [Test]
     public async Task GetLastCurrencyRateByCurrencyIds_ReturnsCorrectCurrenciesWithCurrencyRates()
     {
-        CurrencyEntity forint = new CurrencyEntity("Forint", "HUF");
-        CurrencyEntity dollar = new CurrencyEntity("Dollar", "USD");
-        
+        CurrencyEntity currencyEntity1 = new CurrencyEntity { Name = "Forint", ShortName = "HUF" };
+        CurrencyEntity currencyEntity2 = new CurrencyEntity { Name = "Euro", ShortName = "EUR" };
+    
         List<CurrencyEntity> currencyEntities = new List<CurrencyEntity>
         {
-            forint, dollar
+            currencyEntity1, currencyEntity2
         };
 
         await _dbContext.Currencies.AddRangeAsync(currencyEntities);
         await _dbContext.SaveChangesAsync();
 
         DateTime today = DateTime.Today;
-        
-        CurrencyRateEntity forintRate1 = new CurrencyRateEntity(forint.Id, 10, today.AddDays(-1));
-        CurrencyRateEntity forintRate2 = new CurrencyRateEntity(forint.Id, 10, today);
-        CurrencyRateEntity dollarRate1 = new CurrencyRateEntity(dollar.Id, 10, today);
-        CurrencyRateEntity dollarRate2 = new CurrencyRateEntity(dollar.Id, 10, today.AddDays(-1));
-        
+
+        CurrencyRateEntity forintRate1 = new CurrencyRateEntity(0, currencyEntity1.Id, 10, today.AddDays(-1));
+        CurrencyRateEntity forintRate2 = new CurrencyRateEntity(0, currencyEntity1.Id, 10, today);
+        CurrencyRateEntity dollarRate1 = new CurrencyRateEntity(0, currencyEntity2.Id, 10, today);
+        CurrencyRateEntity dollarRate2 = new CurrencyRateEntity(0, currencyEntity2.Id, 10, today.AddDays(-1));
+
         List<CurrencyRateEntity> currencyRateEntities = new List<CurrencyRateEntity>
         {
             forintRate1, forintRate2, dollarRate1, dollarRate2
@@ -109,42 +114,42 @@ public class CurrencyRateRepositoryTest
         await _dbContext.CurrencyRates.AddRangeAsync(currencyRateEntities);
         await _dbContext.SaveChangesAsync();
 
-        List<int> currencyIds = new List<int> { forint.Id, dollar.Id };
-        
+        List<int> currencyIds = new List<int> { currencyEntity1.Id, currencyEntity2.Id };
+
         var result = await _repository.GetLastCurrencyRateByCurrencyIds(currencyIds);
-        
+
         Dictionary<int, CurrencyRateEntity> expected = new Dictionary<int, CurrencyRateEntity>
         {
-            {forint.Id, forintRate2},
-            {dollar.Id, dollarRate1}
+            {currencyEntity1.Id, forintRate2},
+            {currencyEntity2.Id, dollarRate1}
         };
 
         Assert.That(result, Is.EquivalentTo(expected));
     }
-
+    
     [Test]
     public async Task Create_SuccessfullyCreatesEntity()
     {
-        CurrencyRateEntity currencyRateEntity = new CurrencyRateEntity(1, 1, DateTime.UtcNow);
+        CurrencyRateEntity currencyRateEntity = new CurrencyRateEntity(0, 1, 10m, DateTime.UtcNow);
 
         await _repository.Create(currencyRateEntity);
 
         var result = await _repository.GetById(currencyRateEntity.Id);
-        
+    
         CompareTwoCurrencyRateEntities(result, currencyRateEntity);
     }
 
     [Test]
     public async Task DeleteById_SuccessfullyDeletesEntity()
     {
-        CurrencyRateEntity currencyRateEntity = new CurrencyRateEntity(1, 1, DateTime.UtcNow);
+        CurrencyRateEntity currencyRateEntity = new CurrencyRateEntity(0, 1, 10m, DateTime.UtcNow);
 
         await _dbContext.CurrencyRates.AddAsync(currencyRateEntity);
         await _dbContext.SaveChangesAsync();
 
         var result1 = await _repository.DeleteById(currencyRateEntity.Id);
         var result2 = await _repository.GetById(currencyRateEntity.Id);
-        
+    
         Assert.That(result1, Is.True);
         Assert.That(result2, Is.Null);
     }

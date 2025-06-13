@@ -8,8 +8,9 @@ public class CurrencyEntity
 
     public CurrencyEntity() { }
 
-    public CurrencyEntity(string name, string shortName)
+    public CurrencyEntity(int id, string name, string shortName)
     {
+        Id = id;
         Name = name;
         ShortName = shortName;
     }

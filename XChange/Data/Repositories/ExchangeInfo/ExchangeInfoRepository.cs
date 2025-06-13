@@ -17,11 +17,11 @@ public class ExchangeInfoRepository : IExchangeInfoRepository
     {
         return await _dbContext.ExchangeInfos.FirstOrDefaultAsync(entity => entity.Id == id);
     }
-
-    // public async Task<List<ExchangeInfoEntity>> GetByIds(List<int> ids)
-    // {
-    //     return await _dbContext.ExchangeInfos.Where(entity => ids.Contains(entity.Id)).ToListAsync();
-    // }
+    
+    public async Task<List<ExchangeInfoEntity>> GetByIds(List<int> ids)
+     {
+         return await _dbContext.ExchangeInfos.Where(entity => ids.Contains(entity.Id)).ToListAsync();
+     }
 
     public async Task Create(ExchangeInfoEntity exchangeInfoEntity)
     {

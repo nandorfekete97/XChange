@@ -6,7 +6,10 @@ namespace XChange.Services
     public interface ICurrencyService
     {
         Task<List<CurrencyRateModel>> GetLastCurrencyRatesByCurrencyIds(List<int> currencyIds);
-        CurrencyRateModel ConvertCurrencyRateEntityToModel(CurrencyRateEntity currencyRateEntity, CurrencyModel currencyModel);
-        CurrencyModel ConvertCurrencyEntityToModel(CurrencyEntity currencyEntity);
+        Task<CurrencyModel> GetById(int id);
+        Task<List<CurrencyModel>> GetByIds(List<int> ids);
+        Task<List<CurrencyModel>> GetAll();
+        Task Create(CurrencyModel currency);
+        Task DeleteById(int currencyId);
     }
 }

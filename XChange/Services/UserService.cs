@@ -85,7 +85,7 @@ namespace XChange.Services
 
         public UserFundModel ConvertUserFundEntityToModel(UserFundEntity userFundEntity, CurrencyModel currencyModel)
         {
-            return new UserFundModel(userFundEntity.Id, currencyModel, userFundEntity.Pending, userFundEntity.Disposable);
+            return new UserFundModel(userFundEntity.Id, userFundEntity.UserId, currencyModel, userFundEntity.Pending, userFundEntity.Disposable);
         }
 
         public List<CurrencyModel> ConvertCurrencyEntitiesToModels(List<CurrencyEntity> currencyEntities)

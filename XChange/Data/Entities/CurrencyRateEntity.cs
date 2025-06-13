@@ -9,8 +9,9 @@ public class CurrencyRateEntity
 
     public CurrencyRateEntity() { }
 
-    public CurrencyRateEntity(int currencyId, decimal rate, DateTime timestamp)
+    public CurrencyRateEntity(int id, int currencyId, decimal rate, DateTime timestamp)
     {
+        Id = id;
         CurrencyId = currencyId;
         Rate = rate;
         Timestamp = timestamp;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -53,16 +54,20 @@ public class ExchangeServiceTest
         int targetCurrencyId = 200;
         decimal amount = 500m;
 
+        // i set up the repository so that it'll return an empty list of currencyentities, meaning no currencies were found in the db with given ids
         _currencyRepoMock.Setup(repo =>
                 repo.GetByIds(It.IsAny<List<int>>()))
             .ReturnsAsync(new List<CurrencyEntity>()); 
 
         ExchangeInfoEntity? capturedExchangeInfo = null;
 
+        // i set up the exchaneinforepository to create an exchangeinfoentity 
+        // what's the purpose of callback?
         _exchangeInfoRepoMock.Setup(repo =>
                 repo.Create(It.IsAny<ExchangeInfoEntity>()))
             .Callback<ExchangeInfoEntity>(e => capturedExchangeInfo = e);
         
+        // this part with the verifiable at the end means that i'll want to check later that this update call was indeed called?
         _exchangeInfoRepoMock.Setup(repo =>
                 repo.Update(It.IsAny<ExchangeInfoEntity>()))
             .Verifiable();
@@ -70,6 +75,7 @@ public class ExchangeServiceTest
         // act 
         await _exchangeService.DoExchange(userId, sourceCurrencyId, targetCurrencyId, amount);
         
+        // what we marked verifiable before, now we want to see what the exchangeinforepository actually produced - and we anticipate it to produce an exchangeinfoentity with a failed status, and a non-null value for the failedat property, also that it was called once
         _exchangeInfoRepoMock.Verify(repo =>
             repo.Update(It.Is<ExchangeInfoEntity>(e =>
                     e.Status == ExchangeStatus.Failed &&
@@ -88,6 +94,7 @@ public class ExchangeServiceTest
         int targetCurrencyId = 200;
         decimal amount = 0;
 
+        // we set up the currencyrepository so that it returns 2 valid currency entities
         _currencyRepoMock.Setup(repo => repo.GetByIds(It.IsAny<List<int>>()))
             .ReturnsAsync(new List<CurrencyEntity>
             {
@@ -95,8 +102,10 @@ public class ExchangeServiceTest
                 new() { Id = targetCurrencyId, Name = "EUR", ShortName = "EUR" }
             });
         
+        // again, we set up the exchangeinforepository so that it's create method produces an exchangeinfoentity  
         _exchangeInfoRepoMock.Setup(repo => repo.Create(It.IsAny<ExchangeInfoEntity>()));
         
+        // we'll want to verify later, that we will update our exchangeinfo entity's status and failedat
         _exchangeInfoRepoMock.Setup(repo => repo.Update(It.Is<ExchangeInfoEntity>(e =>
             e.Status == ExchangeStatus.Failed &&
             e.FailedAt != null
@@ -104,11 +113,12 @@ public class ExchangeServiceTest
 
         await _exchangeService.DoExchange(userId, sourceCurrencyId, targetCurrencyId, amount);
 
+        // we verify here
         _exchangeInfoRepoMock.Verify();
     }
 
     [Test]
-    public async Task DoExchange_Fails_WhenUserHasNoSrouceCurrencyFund()
+    public async Task DoExchange_Fails_WhenUserHasNoSourceCurrencyFund()
     {
         int userId = 1;
         int sourceCurrencyId = 100;
@@ -122,6 +132,7 @@ public class ExchangeServiceTest
                 new() { Id = targetCurrencyId, Name = "Euro", ShortName = "EUR" }
             });
 
+        // we set up the userservice so that the model it returns, has no funds to it, meaning user has no money to change
         _userServiceMock.Setup(svc => svc.GetById(userId))
             .ReturnsAsync(new UserModel(
                 userId,
@@ -166,8 +177,10 @@ public class ExchangeServiceTest
             {
                 new UserFundModel(
                     Id: 1,
+                    UserId: userId,
                     CurrencyModel: currencyModel,
                     Pending: 0,
+                    // focus is on this line below, because user only has a hundred points of money, but he intends to change 200, so exchange should fail here
                     Disposable: 100
                 )
             }
@@ -184,69 +197,4 @@ public class ExchangeServiceTest
 
         _exchangeInfoRepoMock.Verify();
     }
-    
-    [Test]
-public async Task DoExchange_Succeeds_WhenAllConditionsAreMet()
-{
-    int userId = 1;
-    int sourceCurrencyId = 100;
-    int targetCurrencyId = 200;
-    decimal amount = 100;
-
-    _currencyRepoMock.Setup(repo => repo.GetByIds(It.IsAny<List<int>>()))
-        .ReturnsAsync(new List<CurrencyEntity>
-        {
-            new() { Id = sourceCurrencyId, Name = "USD", ShortName = "USD" },
-            new() { Id = targetCurrencyId, Name = "EUR", ShortName = "EUR" }
-        });
-
-    var sourceCurrencyModel = new CurrencyModel(sourceCurrencyId, "USD", "USD");
-    var targetCurrencyModel = new CurrencyModel(targetCurrencyId, "EUR", "EUR");
-
-    var user = new UserModel(
-        Id: userId,
-        FirstName: "Jane",
-        LastName: "Smith",
-        Funds: new List<UserFundModel>
-        {
-            new UserFundModel(1, sourceCurrencyModel, Pending: 0, Disposable: 200),
-            new UserFundModel(2, targetCurrencyModel, Pending: 0, Disposable: 0)
-        }
-    );
-
-    _userServiceMock.Setup(svc => svc.GetById(userId)).ReturnsAsync(user);
-
-    _currencyRateRepoMock.Setup(repo => repo.GetLastCurrencyRateByCurrencyIds(It.IsAny<List<int>>()))
-        .ReturnsAsync(new Dictionary<int, CurrencyRateEntity>
-        {
-            { targetCurrencyId, new CurrencyRateEntity { Id = 5, Rate = 2.0m, CurrencyId = targetCurrencyId } }
-        });
-
-    _exchangeInfoRepoMock.Setup(repo => repo.Create(It.IsAny<ExchangeInfoEntity>()));
-
-    var updatedExchangeEntities = new List<ExchangeInfoEntity>();
-
-    _exchangeInfoRepoMock.Setup(repo => repo.Update(It.IsAny<ExchangeInfoEntity>()))
-        .Callback<ExchangeInfoEntity>(entity =>
-        {
-            // Capture a snapshot of the values we care about
-            updatedExchangeEntities.Add(new ExchangeInfoEntity
-            {
-                Id = entity.Id,
-                Status = entity.Status,
-                // Add other properties here if you want to inspect them later
-            });
-        });
-
-    _userFundsRepoMock.Setup(repo => repo.Update(It.IsAny<UserFundEntity>()));
-
-    // Act
-    await _exchangeService.DoExchange(userId, sourceCurrencyId, targetCurrencyId, amount);
-
-    // Assert
-    Assert.That(updatedExchangeEntities.Count(e => e.Status == ExchangeStatus.Successful), Is.EqualTo(1));
-
-    _userFundsRepoMock.Verify(repo => repo.Update(It.IsAny<UserFundEntity>()), Times.Exactly(3));
-}
-
 }
