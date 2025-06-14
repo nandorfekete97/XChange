@@ -1,0 +1,51 @@
+:root {
+  --background-dark: #1c1c1e;
+  --topbar-bg: #2c2c2e;
+  --input-background: #2c2c2e;
+  --gold: #d4af37;
+  --rose-gold: #ba7d47;
+  --text-color: var(--gold);
+  --accent-color: var(--rose-gold);
+}
+
+/* Container for entire layout */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--background-dark);
+  color: var(--text-color);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Horizontal bar containing header items */
+.topbar-row {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--topbar-bg);
+  border-bottom: 1px solid var(--accent-color);
+  box-shadow: 0 2px 10px rgba(186, 125, 71, 0.3);
+}
+
+/* Individual topbar item (acts like a horizontal "header") */
+.topbar {
+  padding: 2rem;
+  color: var(--text-color);
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  flex: 1;
+  border-right: 1px solid var(--accent-color);
+}
+
+.topbar:last-child {
+  border-right: none;
+}
+
+/* Main content below the topbar */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
