@@ -2,6 +2,11 @@
 
 **XChange** is a web application that users to convert their money into different kinds of currencies. Users can maintain a profile, keep track of their funds. XChange was developed showcasing a React.js (Vite) frontend, connected to a ASP.NET backend, using an MSSQL database. During development SOLID principles were followed and Clean Code methodology was maintained. Different layers of the application are thoroughly tested. This is a solo project.
 
+## Snapshots
+
+### Conversion
+![Conversion](./assets/xchange_snapshot.png)
+
 ## 1. 🚀 Features
 
 - Money conversion 
