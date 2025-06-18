@@ -26,8 +26,10 @@
 - **Version Control:**
 [![Git][Git-logo]][Git-url]
 [![GitHub][Github-logo]][Github-url]
-- **Dev Tools**: Docker, Rider, VSCode
-
+- **Dev Tools:**
+[![Rider][Rider-logo]][Rider-url]
+[![VSCode][VSCode-logo]][VSCode-url]
+ 
 ---
 
 ## 3. 🖥️ Running the Project Locally
@@ -91,3 +93,7 @@ The project is built with a RESTful API backend and a component-based frontend.
 [Github-url]: https://github.com/
 [npm-logo]: https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white
 [npm-link]: https://www.npmjs.com/
+[Rider-logo]: https://img.shields.io/badge/Rider-000000?style=for-the-badge&logo=rider&logoColor=white
+[Rider-url]: https://www.jetbrains.com/rider/
+[VSCode-logo]: https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white
+[VSCode-url]: https://code.visualstudio.com/
