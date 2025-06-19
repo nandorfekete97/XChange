@@ -269,6 +269,122 @@ public class CurrencyServiceTest
         Assert.That(exception.Message, Is.EqualTo("All IDs must be positive integers."));
         _currencyRepoMock.Verify(repository => repository.GetByIds(It.IsAny<List<int>>()), Times.Never);
     }
-    
-    
+
+    [Test]
+    public async Task GetAll_ReturnsAllCurrencies()
+    {
+        CurrencyEntity currencyEntity1 = new CurrencyEntity
+        {
+            Id = 1, Name = "Forint", ShortName = "HUF"
+        };
+        CurrencyEntity currencyEntity2 = new CurrencyEntity
+        {
+            Id = 2, Name = "Dollar", ShortName = "USD"
+        };
+
+        List<CurrencyEntity> currencyEntities = new List<CurrencyEntity> { currencyEntity1, currencyEntity2 };
+
+        _currencyRepoMock.Setup(repository => repository.GetAll()).ReturnsAsync(currencyEntities);
+
+        List<CurrencyModel> expected = new List<CurrencyModel>
+        {
+            new CurrencyModel(currencyEntity1.Id, currencyEntity1.Name, currencyEntity1.ShortName),
+            new CurrencyModel(currencyEntity2.Id, currencyEntity2.Name, currencyEntity2.ShortName)
+        };
+        
+        var result = await _currencyService.GetAll();
+        
+        Assert.That(result, Is.EquivalentTo(expected));
+    }
+
+    [Test]
+    public async Task GetAll_EmptyEntityList_ReturnsEmptyModelList()
+    {
+        List<CurrencyEntity> currencyEntities = new List<CurrencyEntity>();
+
+        _currencyRepoMock.Setup(repository => repository.GetAll()).ReturnsAsync(currencyEntities);
+
+        List<CurrencyModel> expected = new List<CurrencyModel>();
+        
+        var result = await _currencyService.GetAll();
+        
+        Assert.That(result, Is.EquivalentTo(expected));
+    }
+
+    [Test]
+    public async Task Create_SuccessfullyCreatesEntity()
+    {
+        CurrencyModel currencyModel = new CurrencyModel(0, "Forint", "HUF");
+
+        var expectedCurrencyEntity = new CurrencyEntity
+            { Name = currencyModel.Name, ShortName = currencyModel.ShortName };
+        
+        _currencyRepoMock.Setup(repository => repository.Create(It.Is<CurrencyEntity>(entity => entity.Name == expectedCurrencyEntity.Name && entity.ShortName == expectedCurrencyEntity.ShortName))).Returns(Task.CompletedTask).Verifiable();
+
+        await _currencyService.Create(currencyModel);
+        
+        _currencyRepoMock.Verify(repository => repository.Create(It.IsAny<CurrencyEntity>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Create_NonZeroId_ThrowsException()
+    {
+        int nonZeroId = 1;
+        CurrencyModel currencyModel = new CurrencyModel(nonZeroId, "Forint", "HUF");
+
+        var exception = Assert.ThrowsAsync<ArgumentException>(async () => await _currencyService.Create(currencyModel));
+
+        Assert.That(exception.Message, Is.EqualTo("Currency ID must be null."));
+    }
+
+    [Test]
+    public async Task Create_EmptyNameAndShortName_ThrowsException()
+    {
+        CurrencyModel currencyModel = new CurrencyModel(0, "", "");
+        
+        var exception = Assert.ThrowsAsync<ArgumentException>(async () => await _currencyService.Create(currencyModel));
+
+        Assert.That(exception.Message, Is.EqualTo("All properties must be filled out."));
+    }
+
+    [Test]
+    public async Task DeleteById_SuccessfullyDeletesCurrency()
+    {
+        int currencyId = 1;
+        CurrencyEntity currencyToDelete = new CurrencyEntity { Id = 1 };
+
+        _currencyRepoMock.Setup(repository => repository.GetById(currencyId)).ReturnsAsync(currencyToDelete);
+        
+        _currencyRepoMock.Setup(repository => repository.DeleteById(currencyId)).Returns(Task.CompletedTask).Verifiable();
+
+        await _currencyService.DeleteById(currencyId);
+        
+        _currencyRepoMock.Verify(repository => repository.GetById(It.IsAny<int>()), Times.Once);
+        _currencyRepoMock.Verify(repository => repository.DeleteById(It.IsAny<int>()), Times.Once);
+    }
+
+    [Test]
+    public async Task DeleteById_InvalidId_ThrowsException()
+    {
+        int invalidId = 0;
+
+        var exception = Assert.ThrowsAsync<ArgumentException>(async () => await _currencyService.DeleteById(invalidId));
+        
+        Assert.That(exception.Message, Is.EqualTo("Invalid ID."));
+        _currencyRepoMock.Verify(repository => repository.DeleteById(It.IsAny<int>()), Times.Never);
+    }
+
+    [Test]
+    public async Task DeleteById_NullCurrency_ThrowsException()
+    {
+        int currencyId = 66;
+        
+        _currencyRepoMock.Setup(repository => repository.GetById(currencyId)).ReturnsAsync((CurrencyEntity) null);
+
+        var exception = Assert.ThrowsAsync<ArgumentException>(async () => await _currencyService.DeleteById(currencyId));
+        
+        Assert.That(exception.Message, Is.EqualTo("Currency not found, could not be deleted."));
+        _currencyRepoMock.Verify(repository => repository.GetById(It.IsAny<int>()), Times.Once);
+        _currencyRepoMock.Verify(repository => repository.DeleteById(It.IsAny<int>()), Times.Never);
+    }
 }
