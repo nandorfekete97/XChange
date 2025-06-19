@@ -130,7 +130,7 @@ public class CurrencyService : ICurrencyService
 
         if (currencyToDelete == null)
         {
-            throw new ArgumentException("UserFund not found, could not be deleted.");
+            throw new ArgumentException("Currency not found, could not be deleted.");
         }
 
         await _currencyRepository.DeleteById(currencyId);
